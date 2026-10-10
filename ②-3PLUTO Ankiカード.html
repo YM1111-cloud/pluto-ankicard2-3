@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>PLUTO②-3 フラッシュカード</title>
+ <style>
+ body {
+ font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+ background-color: #f7f9fc;
+ color: #333333;
+ display: flex;
+ flex-direction: column;
+ align-items: center;
+ padding: 20px;
+ margin: 0;
+ }
+
+ h1 {
+ font-size: 1.5rem;
+ color: #2c3e50;
+ margin-bottom: 10px;
+ }
+
+ .header-stats {
+ display: flex;
+ justify-content: space-between;
+ width: 100%;
+ max-width: 600px;
+ margin-bottom: 15px;
+ font-size: 1.1rem;
+ font-weight: bold;
+ color: #555;
+ padding: 0 10px;
+ }
+
+ .top-controls {
+ display: flex;
+ flex-wrap: wrap;
+ justify-content: center;
+ gap: 8px;
+ width: 100%;
+ max-width: 600px;
+ margin-bottom: 20px;
+ }
+
+ .top-btn {
+ flex: 1;
+ min-width: 130px;
+ padding: 10px 12px;
+ font-size: 0.95rem;
+ border: none;
+ border-radius: 8px;
+ cursor: pointer;
+ font-weight: bold;
+ color: white;
+ transition: background-color 0.2s, transform 0.1s;
+ box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+ }
+
+ .top-btn:active { transform: scale(0.98); }
+ 
+.btn-all { background-color: #7f8c8d; }
+ .btn-all:hover { background-color: #6c7a7d; }
+ .btn-unanswered { background-color: #3498db; }
+ .btn-unanswered:hover { background-color: #2980b9; }
+ .btn-review { background-color: #e67e22; }
+ .btn-review:hover { background-color: #d35400; }
+ .btn-incorrect { background-color: #9b59b6; }
+ .btn-incorrect:hover { background-color: #8e44ad; }
+
+ .mode-indicator {
+ font-size: 0.9rem;
+ color: #e67e22;
+ font-weight: bold;
+ margin-bottom: 10px;
+ }
+
+ #flashcard {
+ background-color: #ffffff;
+ width: 100%;
+ max-width: 600px;
+ min-height: 400px;
+ border-radius: 16px;
+ box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05);
+ display: flex;
+ flex-direction: column;
+ justify-content: center;
+ align-items: center;
+ padding: 30px;
+ box-sizing: border-box;
+ text-align: center;
+ position: relative;
+ }
+
+ #front-side, #back-side {
+ width: 100%;
+ display: flex;
+ flex-direction: column;
+ justify-content: center;
+ align-items: center;
+ }
+ 
+#back-side {
+ display: none;
+ text-align: left;
+ align-items: flex-start;
+ }
+
+ .date-badge {
+ font-size: 0.85rem;
+ background-color: #edf2f7;
+ color: #4a5568;
+ padding: 6px 14px;
+ border-radius: 20px;
+ margin-bottom: 5px;
+ font-weight: bold;
+ display: inline-block;
+ }
+
+ .srs-badge {
+ font-size: 0.8rem;
+ color: #e67e22;
+ margin-bottom: 20px;
+ font-weight: bold;
+ }
+
+ .english-text {
+ font-size: 1.4rem;
+ font-weight: bold;
+ color: #1a1a1a;
+ margin-bottom: 25px;
+ line-height: 1.4;
+ text-align: center;
+ }
+
+ .english-text-back {
+ font-size: 1.2rem;
+ font-weight: bold;
+ color: #34495e;
+ margin-bottom: 15px;
+ line-height: 1.4;
+ text-align: left;
+ width: 100%;
+ border-bottom: 2px dashed #e1e8ed;
+ padding-bottom: 15px;
+ }
+
+ .japanese-text {
+ font-size: 1.2rem;
+ font-weight: bold;
+ color: #2c3e50;
+ margin-bottom: 20px;
+ line-height: 1.6;
+ width: 100%;
+ border-bottom: 2px solid #e1e8ed;
+ padding-bottom: 15px;
+ }
+
+ .note-box {
+ background-color: #fff9e6;
+ border-left: 4px solid #f5a623;
+ padding: 15px;
+ border-radius: 4px;
+ font-size: 1rem;
+ line-height: 1.6;
+ color: #5c4716;
+ width: 100%;
+ box-sizing: border-box;
+ }
+
+ #play-audio-btn {
+ font-size: 1.1rem;
+ padding: 12px 24px;
+ border-radius: 30px;
+ background-color: #4a90e2;
+ color: white;
+ border: none;
+ cursor: pointer;
+ box-shadow: 0 4px 8px rgba(74, 144, 226, 0.3);
+ transition: transform 0.1s, background-color 0.2s;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ gap: 8px;
+ font-weight: bold;
+ }
+
+ #play-audio-btn:active {
+ transform: scale(0.95);
+ background-color: #357abd;
+ }
+
+ .controls {
+ display: flex;
+ gap: 10px;
+ margin-top: 30px;
+ width: 100%;
+ max-width: 600px;
+ justify-content: center;
+ }
+
+ .action-btn {
+ flex: 1;
+ padding: 15px 10px;
+ font-size: 1rem;
+ border: none;
+ border-radius: 8px;
+ cursor: pointer;
+ font-weight: bold;
+ transition: background-color 0.2s, opacity 0.2s;
+ }
+
+ #prev-btn { background-color: #e2e8f0; color: #4a5568; }
+ #flip-btn { background-color: #4a90e2; color: white; }
+ #next-btn { background-color: #e2e8f0; color: #4a5568; }
+
+ .eval-btn {
+ flex: 1;
+ padding: 15px 5px;
+ font-size: 1rem;
+ border: none;
+ border-radius: 8px;
+ cursor: pointer;
+ font-weight: bold;
+ color: white;
+ }
+
+ #back-to-front-btn { background-color: #95a5a6; }
+ #back-to-front-btn:hover { background-color: #7f8c8d; }
+ #wrong-btn { background-color: #e74c3c; }
+ #wrong-btn:hover { background-color: #c0392b; }
+ 
+#correct-btn { background-color: #2ecc71; }
+ #correct-btn:hover { background-color: #27ae60; }
+
+ .empty-state {
+ font-size: 1.5rem;
+ color: #2ecc71;
+ font-weight: bold;
+ text-align: center;
+ line-height: 1.5;
+ }
+ </style>
+</head>
+<body>
+
+ <h1>🎧 PLUTO②-3 フラッシュカード</h1>
+
+ <div class="header-stats">
+ <span id="progress-text">1 / 99</span>
+ <span id="score-text">正解数: 0</span>
+ </div>
+ 
+<div class="mode-indicator" id="mode-indicator">現在のモード：📁 全問</div>
+
+ <div class="top-controls">
+ <button class="top-btn btn-all" onclick="setMode('all')">📁 全問</button>
+ <button class="top-btn btn-unanswered" onclick="jumpToUnanswered()">🆕 未回答へジャンプ</button>
+ <button class="top-btn btn-review" onclick="setMode('review')">📅 今日の復習</button>
+ <button class="top-btn btn-incorrect" onclick="setMode('incorrect')">🎯 未正解</button>
+ </div>
+
+ <div id="flashcard">
+ <div id="front-side">
+ <div class="date-badge" id="date-badge">最終回答日：未回答</div>
+ <div class="srs-badge" id="srs-badge"></div>
+ <div class="english-text" id="front-eng-content"></div>
+ <button id="play-audio-btn">🔊 音声を聴く</button>
+ </div>
+
+ <div id="back-side">
+ <div class="english-text-back" id="back-eng-content"></div>
+ <div class="japanese-text" id="jap-content"></div>
+ <div class="note-box" id="note-content"></div>
+ </div>
+ </div>
+
+ <div class="controls" id="controls-front">
+ <button id="prev-btn" class="action-btn" onclick="prevCard()">◀ 前へ</button>
+ <button id="flip-btn" class="action-btn" onclick="flipCard()">🔄 裏返す</button>
+ <button id="next-btn" class="action-btn" onclick="nextCard()">次へ ▶</button>
+ </div>
+
+ <div class="controls" id="controls-back" style="display: none;">
+ <button id="back-to-front-btn" class="eval-btn" onclick="returnToFront()">🔙 表面に戻る</button>
+ <button id="wrong-btn" class="eval-btn" onclick="markIncorrect()">❌ 覚えてない</button>
+ <button id="correct-btn" class="eval-btn" onclick="markCorrect()">◯ 完璧！</button>
+ </div>
+
+ <script>
+ const cardsData = [
+{"en": "Hey, Mont Blanc. You hanging in?", "jp": "おい、モンブラン。踏ん張ってるか？[cite: 6]", "note": "hang in (there) は「（困難な状況で）持ちこたえる、踏ん張る、がんばる」という定番の口語イディオム。[cite: 6]"},
+{"en": "[air whooshing]", "jp": "（空気を引き裂く音）[cite: 6]", "note": ""},
+{"en": "What's your status? Take any damage?", "jp": "状態はどうだ？ 被害（ダメージ）は受けたか？[cite: 6]", "note": "What's your status? は「状況・ステータスはどうだ？」。Take damage は「損害・ダメージを受ける」。[cite: 6]"},
+{"en": "Well, Brando, you destroyed 2,895.", "jp": "そうだな、ブランノ、君は2,895機壊した。[cite: 6]", "note": ""},
+{"en": "I got 77 more than that.", "jp": "俺はそれより77機多く倒したぞ。[cite: 6]", "note": "[数量] more than... で「〜より[数量]だけ多く」。[cite: 6]"},
+{"en": "How about you? How many combatants did you destroy?", "jp": "お前はどうなんだ？ 戦闘員（敵機）を何機破壊した？[cite: 6]", "note": "combatant は「戦闘員、兵士」。[cite: 6]"},
+{"en": "Lot of 'em.", "jp": "たくさんさ。[cite: 6]", "note": "Lot of 'em は A lot of them のカジュアルな口語略表現。[cite: 6]"},
+{"en": "\"Lot of 'em,\" huh?", "jp": "「たくさん」だと？[cite: 6]", "note": ""},
+{"en": "Pretty impressive. 3,022 of 'em.", "jp": "かなりすごいな。3,022機か。[cite: 6]", "note": "Pretty impressive は「かなり素晴らしい、大したものだ」。[cite: 6]"},
+{"en": "What are we doing here? I don't know.", "jp": "僕たちはここで何をしているんだろう？ 分からないや。[cite: 6]", "note": ""},
+{"en": "We came here to fight for a just cause, didn't we?", "jp": "正義の大義（正当な理由）のために戦いに来たんだろ、違うか？[cite: 6]", "note": "a just cause は「正義の大義、正当な理由」。didn't we? は付加疑問で「〜だよね？」。[cite: 6]"},
+{"en": "To liberate robots from the yoke of oppression.", "jp": "抑圧の絆（くびき）からロボットたちを解放するために。[cite: 6]", "note": "liberate A from B は「AをBから解放する」。yoke of oppression は「抑圧のくびき（支配・重圧）」。[cite: 6]"},
+{"en": "That's why we came, right?", "jp": "だから俺たちは来たんだろ、そうだろ？[cite: 6]", "note": ""},
+{"en": "Wasn't it?", "jp": "本当にそうだったのかな？[cite: 6]", "note": "大義名分に対する深い疑念を表す反語的なつぶやき。[cite: 6]"},
+{"en": "Access the network feed.", "jp": "ネットワークの映像（フィード）にアクセスしろ。[cite: 6]", "note": "network feed は「ネットワーク配信、生中継映像」。[cite: 6]"},
+{"en": "The palace of Darius XIV. They say it's about to fall.", "jp": "ダリウス14世の宮殿だ。まもなく陥落すると言われている。[cite: 6]", "note": "be about to... は「まさに〜しようとしている」。fall は「（城や都市が）陥落する」。[cite: 6]"},
+{"en": "Our peacekeeping forces have entered the capitol in triumph.", "jp": "我らが国連平和維持軍が、意気揚々と首都に入城しました。[cite: 6]", "note": "in triumph は「勝利に満ちて、意気揚々と」。capitol は「首都、大本営」。[cite: 6]"},
+{"en": "Atom, the Peace Ambassador.", "jp": "平和大使のアトムか。[cite: 6]", "note": ""},
+{"en": "'Course he got the easy job.", "jp": "当然、あいつはお気楽な（楽な）仕事をもらったわけだ。[cite: 6]", "note": "'Course は Of course の省略。[cite: 6]"},
+{"en": "\"Why are we here\"? That's the big question, right?", "jp": "「なぜ俺たちはここにいるのか」か。それこそが最大の疑問だな。[cite: 6]", "note": ""},
+{"en": "Who are we supposed to kill in this desert day after day?", "jp": "この砂漠で、俺たちは来る日も来る日も誰を殺すことになっているんだ？[cite: 6]", "note": "be supposed to... は「〜することになっている」。day after day は「来る日も来る日も」。[cite: 6]"},
+{"en": "Who are we supposed to hate? Couldn't tell you.", "jp": "俺たちは誰を憎むことになっているんだ？ さっぱり分からないよ。[cite: 6]", "note": "Couldn't tell you. は I couldn't tell you（さっぱり分からない、答えようがない）の主語省略。[cite: 6]"},
+{"en": "Hate, huh?", "jp": "憎しみ、か。[cite: 6]", "note": ""},
+{"en": "Uh-huh. It fuels their wars, but I don't even know what it feels like.", "jp": "ああ。奴らの戦争の燃料（原動力）になっているが、俺にはそれがどんな感情なのかさえ分からない。[cite: 6]", "note": "fuel は動詞で「〜の燃料となる、〜を煽る」。what it feels like は「それがどんな感じか」。[cite: 6]"},
+{"en": "[footsteps thudding] [crowd cheering]", "jp": "（地響きのような足音）（観客の大歓声）[cite: 6]", "note": ""},
+{"en": "[loud thud] [crowd cheering]", "jp": "（激しい衝撃音）（観客の大歓声）[cite: 6]", "note": ""},
+{"en": "Brando! Brando! Brando!", "jp": "ブランノ！ ブランノ！ ブランノ！[cite: 6]", "note": ""},
+{"en": "What a win, folks! Our champ's a force of nature!", "jp": "なんという勝利でしょう、みなさん！ 我らがチャンピオンはまさに圧倒的な自然の猛威です！[cite: 6]", "note": "force of nature は「圧倒的な力を持つ存在、自然の猛威」。folks は「みなさん」。[cite: 6]"},
+{"en": "He clinches top honors here at the ESK-KKR tournament with a decisive knockout!", "jp": "ESK-KKRトーナメントにて、決定的なノックアウトで最高の栄誉を勝ち取りました！[cite: 6]", "note": "clinch は「（勝利・契約などを）確実にする、勝ち取る」。top honors は「最高の栄誉、優勝」。[cite: 6]"},
+{"en": "936 wins in a row!", "jp": "パック936連勝！[cite: 6]", "note": "in a row は「連続して」。[cite: 6]"},
+{"en": "Will anyone ever knock our invincible hero from his throne?", "jp": "この無敵のヒーローを王座から引きずり下ろす者など、果たして現れるのでしょうか！？[cite: 6]", "note": "knock someone from one's throne は「人を王座から引きずり下ろす」。invincible は「無敵の」。[cite: 6]"},
+{"en": "He's the strongest warrior in history!", "jp": "彼は歴史上最強の闘士です！[cite: 6]", "note": ""},
+{"en": "Brando!", "jp": "ブランノ！[cite: 6]", "note": ""},
+{"en": "That was a heck of a match, Brando. I'm impressed.", "jp": "とんでもない（すごい）試合だったな、ブランノ。感服したよ。[cite: 6]", "note": "a heck of a... は a hell of a... の丁寧な口語表現で「凄まじい、とんでもない」。[cite: 6]"},
+{"en": "Nah. I'm getting rickety these days. Even if it doesn't show.", "jp": "いやぁ。見た目には出なくても、最近はガタが来ていてな。[cite: 6]", "note": "rickety は「ガタが来ている、グラグラしている」。even if it doesn't show は「見た目には出なくても」。[cite: 6]"},
+{"en": "End of some fights, I'm too wiped out to move. Like right now.", "jp": "試合の終わりには、疲れ果てて動けなくなることもある。まさに今みたいにな。[cite: 6]", "note": "too ... to [動詞] は「〜すぎて...できない」。be wiped out は「疲れ果てる、ヘトヘトになる」。[cite: 6]"},
+{"en": "I still don't get the logic of it.", "jp": "未だにその理屈（論理）が分からないよ。[cite: 6]", "note": "get the logic of... は「〜の理屈・ロジックを理解する」。[cite: 6]"},
+{"en": "All of you wear pankration suits with the same loadout,", "jp": "お前たちは皆、同じ装備（ロードアウト）のパンクラチオン・スーツを着ているのに、[cite: 6]", "note": "pankration は古代ギリシャの総合格闘技。loadout は「（装備の）セット・構成」。[cite: 6]"},
+{"en": "but when you wear it, you're the strongest by far.", "jp": "お前がそれを着ると、ズバ抜けて最強になる。[cite: 6]", "note": "by far は「断然、ズバ抜けて」。[cite: 6]"},
+{"en": "All you need to win most fights is a little experience under your belt.", "jp": "たいていの試合で勝つために必要なのは、ほんの少し積み重ねた経験だけさ。[cite: 6]", "note": "under one's belt は「（経験や実績などを）自分のものにして、体得して」という超頻出イディオム。[cite: 6]"},
+{"en": "The rest of it's dumb luck.", "jp": "あとは単なる運（ラッキー）さ。[cite: 6]", "note": "dumb luck は「まぐれ、運の良さ、棚からボタ餅的幸運」。[cite: 6]"},
+{"en": "Luck?", "jp": "運、だって？[cite: 6]", "note": ""},
+{"en": "Uh-huh. Humans always laugh at me, harping on it as much as I do.", "jp": "ああ。俺があまりにしつこく言うもんだから、人間どもはいつも嘲笑うがな。[cite: 6]", "note": "harp on... は「〜についてしつこく話す、同じことをくどくど言う」。[cite: 6]"},
+{"en": "But, hey, Brando's a lucky guy.", "jp": "だがな、ブランノってのは運がいい男なんだよ。[cite: 6]", "note": ""},
+{"en": "Pretty old-fashioned, huh?", "jp": "かなり時代がかった（古い）建物だな？[cite: 6]", "note": "old-fashioned は「時代遅れの、古い、レトロな」。[cite: 6]"},
+{"en": "Yes.", "jp": "ああ。[cite: 6]", "note": ""},
+{"en": "This is where I live. Way up top.", "jp": "ここが俺の住処だ。一番上の階さ。[cite: 6]", "note": "way up top で「遥か一番上の（最上階に）」。[cite: 6]"},
+{"en": "I saw that look on your face, Detective.", "jp": "刑事さん、あんたの顔に浮かんだその表情は見逃さなかったぞ。[cite: 6]", "note": "that look on your face は「あなたの顔のその表情」。[cite: 6]"},
+{"en": "It says, \"Why does a famous athlete live in a dump like this? Don't they pay him?\"", "jp": "「なんで有名なアスリートがこんなボロ屋敷に住んでるんだ？ ギャラをもらってないのか？」って言いたそうだな。[cite: 6]", "note": "dump は口語で「ボロ屋、きたない場所」。[cite: 6]"},
+{"en": "Huh? [chuckles] No.", "jp": "え？ ふふ、まさか。[cite: 6]", "note": ""},
+{"en": "Sure, with all that fight money, I could afford a mansion.", "jp": "たしかに、あのファイトマネーがあれば大邸宅（マンション）だって買える。[cite: 6]", "note": "afford は「〜を買う余裕がある」。could は仮定法で「買おうと思えば買える」。[cite: 6]"},
+{"en": "Something ritzier than this, at least.", "jp": "少なくとも、これよりはずっと高級な（リッチな）家をな。[cite: 6]", "note": "ritzy は口語で「高級な、豪華な」（ritzier はその比較級）。[cite: 6]"},
+{"en": "However,", "jp": "だがな、[cite: 6]", "note": ""},
+{"en": "there's something else I like to spend my cash on.", "jp": "俺には金を注ぎ込みたい別の目的があるんだよ。[cite: 6]", "note": "spend cash on... は「〜にお金を費やす、使う」。[cite: 6]"},
+{"en": "Attention! The king of the fighting world is home!", "jp": "全員注目！ 格闘界のキングが帰宅したぞ！[cite: 6]", "note": "Attention! は「気をつけ！ 注目！」。[cite: 6]"},
+{"en": "Daddy!", "jp": "パパ！[cite: 6]", "note": ""},
+{"en": "Daddy!", "jp": "パパ！[cite: 6]", "note": ""},
+{"en": "All right!", "jp": "よーしよし！[cite: 6]", "note": ""},
+{"en": "You all have a good day today?", "jp": "みんな、今日はいい一日だったか？[cite: 6]", "note": "Did you all have... の Did 省略。[cite: 6]"},
+{"en": "Yeah! We saw you fight, Daddy! You're so strong!", "jp": "うん！ パパの試合見たよ！ すごく強かった！[cite: 6]", "note": ""},
+{"en": "You were amazing!", "jp": "めちゃくちゃカッコよかった！[cite: 6]", "note": ""},
+{"en": "That's why Daddy's the champ!", "jp": "だからパパはチャンピオンなんだよ！[cite: 6]", "note": ""},
+{"en": "Look who's popular. Hello.", "jp": "大人気ね。こんにちは。[cite: 6]", "note": "Look who's [形容詞] は「あら、誰かさんが〜ね」と親しみを込めて言う定番フレーズ。[cite: 6]"},
+{"en": "Oh! This is Mine. She's my better half.", "jp": "おっと！ こいつがミーネだ。俺の愛妻（大切な伴侶）さ。[cite: 6]", "note": "my better half は配偶者（特に妻）を指す非常に温かみのある定番口語表現。[cite: 6]"},
+{"en": "Mine. I'm Inspector Gesicht with Europol.", "jp": "ミーネさん。ユーロポールのゲジヒト警部です。[cite: 6]", "note": "Inspector は「警部、刑事」。[cite: 6]"},
+{"en": "All right, you rugrats! Who's hungry, huh?", "jp": "よーし、チビども！ お腹が空いた奴は誰だ？[cite: 6]", "note": "rugrat は口語・スラングで「チビっ子、子供たち（床をハイハイする子）」。[cite: 6]"},
+{"en": "Me! I'm starving!", "jp": "僕！ お腹ペコペコだよ！[cite: 6]", "note": "be starving は「お腹がペコペコだ、飢えている」。[cite: 6]"},
+{"en": "Come on.", "jp": "さあ、行こう。[cite: 6]", "note": ""},
+{"en": "Please join us for dinner. I made plenty.", "jp": "ぜひ一緒に夕食を召し上がっていってください。たくさん作りましたから。[cite: 6]", "note": "join us for dinner は「夕食をご一緒する」。[cite: 6]"},
+{"en": "Catch me if you can!", "jp": "つかまえられるもんならつかまえてみろー！[cite: 6]", "note": "Catch me if you can はかくれんぼや追いかけっこの定番フレーズ。[cite: 6]"},
+{"en": "Easy does it! You're getting it all over!", "jp": "落ち着きなさい！ あちこちに撒き散らしてるでしょう！[cite: 6]", "note": "Easy does it! は「慎重にね、慌てないで、落ち着いて」。get it all over は「あちこちに散らかす・こぼす」。[cite: 6]"},
+{"en": "No running during dinner! This isn't a playground!", "jp": "ご飯の最中に走っちゃダメ！ ここは遊園地（公園）じゃないのよ！[cite: 6]", "note": "playground は「運動場、公園、遊び場」。[cite: 6]"},
+{"en": "Are you really a detective, mister?", "jp": "おじさん、本当に刑事なの？[cite: 6]", "note": ""},
+{"en": "Yes, I really am.", "jp": "ああ、本当だよ。[cite: 6]", "note": ""},
+{"en": "Let me see it, then! Whatever cool weapon they give you to fight crime!", "jp": "だったら見せてよ！ 悪と戦うために支給されたカッコいい武器を見せて！[cite: 6]", "note": "fight crime は「犯罪と戦う」。Whatever... は「〜するどんなものでも」。[cite: 6]"},
+{"en": "Um, yeah. I'm afraid they can't give me anything like that.", "jp": "ああ、うーん。あいにくそういうものは支給されていないんだ。[cite: 6]", "note": "I'm afraid... は「あいにく〜だと思う、申し訳ないが〜だ」。[cite: 6]"},
+{"en": "My goodness! Let him eat in peace!", "jp": "全くこの子は！ 静かにご飯を食べさせてあげなさい！[cite: 6]", "note": "in peace は「落ち着いて、静かに、邪魔されずに」。[cite: 6]"},
+{"en": "Keep it up, and I'll swat your rear. See if I don't!", "jp": "これ以上調子に乗ったらお尻を引っ叩くわよ。本当だからね！[cite: 6]", "note": "swat your rear は「お尻を叩く」。See if I don't! は「やってみせないか見てなさい（本当だからね！）」という脅し文句。[cite: 6]"},
+{"en": "Hmm. They're insane. I'm sorry.", "jp": "まったく、とんでもない奴らだ。すまんね。[cite: 6]", "note": "insane は「狂っている、無茶苦茶だ」。[cite: 6]"},
+{"en": "Oh, no. I haven't had this much fun during dinner in a long time.", "jp": "いやいや。こんなに楽しい夕食は久々ですよ。[cite: 6]", "note": "in a long time は「久しぶりに」。[cite: 6]"},
+{"en": "You said it. I think human-style meals have a lot going for 'em, don't you?", "jp": "まったくその通りだ。人間スタイルの食事ってのは、良いところがたくさんあると思わないか？[cite: 6]", "note": "You said it. は「まったくその通りだ（相手への強い同意）」。have a lot going for... は「〜には良い点・魅力がたくさんある」。[cite: 6]"},
+{"en": "I do. They're so cheerful and lively.", "jp": "同感です。とても明るくて活気がありますね。[cite: 6]", "note": "lively は「活気がある、賑やかな」。[cite: 6]"},
+{"en": "That's how we handle mealtime in the house of Brando.", "jp": "これがブランノ家での食事風景ってわけさ。[cite: 6]", "note": "handle は「対処する、扱う」。[cite: 6]"},
+{"en": "It's an utter circus three times a day.", "jp": "1日3回、完全に大サーカス状態だよ。[cite: 6]", "note": "utter circus は「完全な大騒ぎ（サーカス）」。[cite: 6]"},
+{"en": "Not so fast! You'd better take some of that salad!", "jp": "ガツガツ食べないの！ サラダもちゃんと取りなさい！[cite: 6]", "note": "had better... は「〜した方がいい（そうしないとマズい）」。[cite: 6]"},
+{"en": "Will do!", "jp": "そうするよ！[cite: 6]", "note": "Will do! は I will do so（了解！ そうするよ！）の非常に実用的な短縮口語。[cite: 6]"},
+{"en": "Daddy is strong and all, but Mommy is the strongest one!", "jp": "パパも強いけど、ママが一番強いんだよ！[cite: 6]", "note": "strong and all で「強いとか何とか（強いのは認めるけど）」。[cite: 6]"},
+{"en": "She should be famous 'cause she's the real world champion!", "jp": "ママこそが本当の世界チャンピオンなんだから、有名になるべきだよ！[cite: 6]", "note": ""},
+{"en": "Champion, champion, champion! Champion, champion, champ--", "jp": "チャンピオン！ チャンピオン！ チャンピオン！[cite: 6]", "note": ""},
+{"en": "Stop the cheering, and finish your dinner already!", "jp": "応援はやめて、いい加減にご飯を食べ終えなさい！[cite: 6]", "note": "already は文末で「いい加減に、とっくに」と苛立ちを添える表現。[cite: 6]"},
+{"en": "Too scary! She really is the champion, huh?", "jp": "怖すぎる！ 本当にチャンピオンだね！[cite: 6]", "note": ""},
+{"en": "Is everyone asleep?", "jp": "みんな眠ったかい？[cite: 6]", "note": ""},
+{"en": "Go easy on it, you lightweight.", "jp": "控えめにしておけよ、お酒（エネルギー）に弱い奴め。[cite: 6]", "note": "Go easy on... は「〜を控えめにする、手加減する」。lightweight は「お酒（または刺激物）に弱い人、下戸」。[cite: 6]"},
+{"en": "This is the life I've carved out for myself with all the prize money I've been racking up.", "jp": "稼ぎまくったファイトマネーで、俺が切り開いて手に入れた人生がこれさ。[cite: 6]", "note": "carve out は「（努力して人生や居場所を）切り開く」。rack up は「（勝利や賞金などを）積み重ねる、稼ぎ出す」。[cite: 6]"},
+{"en": "And with me brawling for a living,", "jp": "俺が喧嘩（格闘）で生計を立てているから、[cite: 6]", "note": "brawl は「殴り合いの喧嘩をする」。for a living は「生計を立てるために」。[cite: 6]"},
+{"en": "Mine never knows if I'm going to come home on top of the world", "jp": "ミーネは俺が絶頂感（勝利）に満ちて帰ってくるか、[cite: 6]", "note": "on top of the world は「最高の気分で、絶頂で」。[cite: 6]"},
+{"en": "or in a box of bits headed for the scrap heap.", "jp": "それともクズ鉄置き場行きのパーツ箱に入って帰ってくるか、いつもヒヤヒヤさ。[cite: 6]", "note": "scrap heap は「クズ鉄の山、スクラップ場」。[cite: 6]"},
+{"en": "She used to be home alone.", "jp": "昔、あいつは家に一人きりだった。[cite: 6]", "note": ""},
+{"en": "Nothing to do but worry all by herself until I walked through that door again.", "jp": "俺が再びあのドアをくぐるまで、たった一人で心配するしか手がない日々だった。[cite: 6]", "note": "Nothing to do but [動詞] は「〜するより他に手がない」。[cite: 6]"},
+{"en": "And that's when the policy came into effect.", "jp": "そこで例の制度が施行（適用）されたってわけさ。[cite: 6]", "note": "come into effect は「（法律や制度などが）発効する、施行される」。[cite: 6]"},
+{"en": "The Robot Adoption System, in other words?", "jp": "つまり、ロボット養子縁組制度のことか？[cite: 6]", "note": "in other words は「言い換えれば、つまり」。[cite: 6]"},
+{"en": "Yeah. We started with one,", "jp": "ああ。最初は一人から始めたんだが、[cite: 6]", "note": ""},
+{"en": "but it wasn't long before we took in another kid.", "jp": "すぐにもう一人の子を引き取ることになった。[cite: 6]", "note": "It wasn't long before... は「まもなく〜した」。take in は「（養子などを）引き取る、受け入れる」。[cite: 6]"},
+{"en": "The more the merrier. Got five of them now.", "jp": "人数は多ければ多いほど楽しいからな。今じゃ5人だ。[cite: 6]", "note": "The more the merrier. は「大人数の方が楽しい、多ければ多いほど賑やかでいい」という超定番の格言フレーズ。[cite: 6]"},
+{"en": "Funny thing, parenthood.", "jp": "親になるってのは、おかしなもんだな。[cite: 6]", "note": "parenthood は「親であること、親の立場」。[cite: 6]"},
+{"en": "Before I had kids, I never gave a shit what happened to me in a fight.", "jp": "子供を持つ前は、試合で自分がどうなろうと知ったこっちゃなかった。[cite: 6]", "note": "not give a shit は「全く意に介さない、どうでもいいと思う」という非常に強い口語（スラング）。[cite: 6]"},
+{"en": "I couldn't be bothered, you know?", "jp": "構っていられなかったんだよ、分かるか？[cite: 6]", "note": "couldn't be bothered は「面倒くさくて構っていられない、気にも留めない」。[cite: 6]"},
+{"en": "But now?", "jp": "だが今はどうだ？[cite: 6]", "note": ""},
+{"en": "I wanna live as long as I can so I get more time with them.", "jp": "少しでもあいつらと一緒にいられるよう、できるだけ長く生きたいと思う。[cite: 6]", "note": "as long as I can は「できるだけ長く」。[cite: 6]"},
+{"en": "That's weird, huh?", "jp": "変なもんだろ？[cite: 6]", "note": ""},
+{"en": "I got kids so I could die knowing my wife wouldn't be all alone.", "jp": "自分が死んでも妻が一人ぼっちにならないようにと子供を引き取ったのに、[cite: 6]", "note": "so (that)... could... は「〜できるように」。[cite: 6]"},
+{"en": "And now that they're here, I just wanna stick around forever.", "jp": "いざ子供たちがここにいたら、今度は永遠に居座り続けたく（長生きしたく）なっちまった。[cite: 6]", "note": "now that... は「今や〜なのだから、〜である以上」。stick around は「（その場所に）長居する、留まる、生き続ける」。[cite: 6]"},
+{"en": "Mont Blanc had stuff he wanted to live for too.", "jp": "モンブランにも、生きていたいと思える大切なものがあったはずだ。[cite: 6]", "note": "live for... は「〜のために生きる、〜を生きがいにする」。[cite: 6]"},
+{"en": "He and I were deployed together during the 39th Central Asian War. That's where I met him.", "jp": "あいつと俺は第39次中アジア戦争で一緒に派遣された。そこで出会ったんだ。[cite: 6]", "note": "deploy は「（兵力や部隊を）配置・派遣する」。[cite: 6]"},
+{"en": "The two of us saw a lot of combat, but it wasn't all bad.", "jp": "俺たち二人は数々の戦闘を経験したが、悪いことばかりじゃなかった。[cite: 6]", "note": "see combat は「実戦を経験する」。[cite: 6]"},
+{"en": "I remember the good times.", "jp": "楽しい時間も覚えている。[cite: 6]", "note": ""},
+{"en": "We'd stay up late, and he'd tell me about trees, birds, all kinds of things.", "jp": "夜遅くまで起きていてな、あいつは木や鳥のこと、あらゆる話を聞かせてくれた。[cite: 6]", "note": "stay up late は「夜更かしする」。ここでの would は過去の習慣（よく〜したものだ）。[cite: 6]"},
+{"en": "For a guy as great as Mont Blanc to die like that, in pieces…", "jp": "モンブランほどの偉大な男が、あんな無残にバラバラにされて死ぬなんてな…[cite: 6]", "note": "in pieces は「バラバラになって、破片になって」。[cite: 6]"},
+{"en": "Have you ever heard of a robot by the name of North No.2?", "jp": "ノース2号という名のロボットを聞いたことはあるか？[cite: 6]", "note": "by the name of... は「〜という名前の」。[cite: 6]"},
+{"en": "Yeah. Never met him in person though.", "jp": "ああ。直接会ったことはないがな。[cite: 6]", "note": "in person は「直接会って、本人自ら」。[cite: 6]"},
+{"en": "He's dead as well.", "jp": "彼もまた死んだよ。[cite: 6]", "note": "as well は「〜もまた（too / also）」。[cite: 6]"},
+{"en": "He was working in Scotland as a butler for an elderly composer.", "jp": "スコットランドで、老作曲家の執事として働いていた。[cite: 6]", "note": "elderly は「年配の、老年の」（old より丁寧な表現）。[cite: 6]"},
+{"en": "A peaceful existence, as far as I could tell.", "jp": "私の見立てでは、平和な生涯を送っていた。[cite: 6]", "note": "as far as I could tell は「私の知る限り、私が判断できた限り」。[cite: 6]"},
+{"en": "Was it a murder?", "jp": "殺人（殺害）か？[cite: 6]", "note": ""},
+{"en": "It was. And now you're in danger as well for the same reason they killed him.", "jp": "そうだ。そして奴らが彼を殺したのと同じ理由で、今やお前も危険に晒されている。[cite: 6]", "note": "be in danger は「危険に晒されている」。[cite: 6]"},
+{"en": "Don't worry about me. I'm built tough. \"King of the Fighters,\" they call me.", "jp": "俺の心配は無用だ。頑丈にできてるんでね。「キング・オブ・ファイターズ」と人は呼ぶ。[cite: 6]", "note": "be built tough は「頑丈に作られている」。[cite: 6]"},
+{"en": "And that's the reason they're targeting you.", "jp": "だからこそ、奴らはお前を標的にしているんだ。[cite: 6]", "note": "target は動詞で「〜を標的・ターゲットにする」。[cite: 6]"},
+{"en": "I say bring it on.", "jp": "かかってこいってんだ。[cite: 6]", "note": "bring it on は「かかってこい！ やってやろうじゃないか！」という威勢の良い定番スラング。[cite: 6]"},
+{"en": "After what that murderous bastard did to Mont Blanc,", "jp": "あの殺人鬼の野郎がモンブランに何をしたかを思えば、[cite: 6]", "note": "murderous bastard は「殺人鬼の野郎、凄惨なクソ野郎」。[cite: 6]"},
+{"en": "I'll rip him limb from limb. And that's a damn promise.", "jp": "八つ裂き（手足を一本ずつ引きちぎる）にしてやる。絶対に誓ってもいい。[cite: 6]", "note": "rip someone limb from limb は「人の手足を一本ずつ引きちぎる、八つ裂きにする」。a damn promise で「絶対の誓い」。[cite: 6]"},
+{"en": "Don't try to deal with them on your own. If anything happens, you contact me!", "jp": "一人で対処しようとするな。何かあったら私に連絡しろ！[cite: 6]", "note": "on your own は「自分一人で」。deal with... は「〜に対処する、処理する」。[cite: 6]"},
+{"en": "Would you like another one?", "jp": "もう一杯いかがですか？[cite: 6]", "note": "Would you like...? は丁寧な勧め。[cite: 6]"},
+{"en": "Uh, thanks, but I'd better not push it.", "jp": "ああ、感謝しますが、これ以上無理はしない方がよさそうだ。[cite: 6]", "note": "push it は「（調子に乗って）無理をする、押し進める」。[cite: 6]"},
+{"en": "Those Turkish energy drinks don't mess around, do they?", "jp": "トルコのエネルギードリンクは容赦がない（効き目が強烈）ですね。[cite: 6]", "note": "don't mess around は「半端じゃない、容赦がない、ふざけていない」。[cite: 6]"},
+{"en": "You know, I'm ready for another one.", "jp": "俺ならもう一杯いけるぞ。[cite: 6]", "note": ""},
+{"en": "I was talking to our guest!", "jp": "お客さんに言ったのよ！[cite: 6]", "note": ""},
+{"en": "Forget I even asked you.", "jp": "聞かなかったことにしてくれ。[cite: 6]", "note": "Forget I even... は「〜したことなんて忘れてくれ（撤回する）」。[cite: 6]"},
+{"en": "You sure you don't want a ride back to the stadium?", "jp": "スタジアムまで車で送らなくて本当にいいのか？[cite: 6]", "note": "want a ride back で「送り届けてほしい」。[cite: 6]"},
+{"en": "Don't worry about me. I'll hail a cab if I need one.", "jp": "気に使わないでくれ。必要ならタクシーを拾うよ。[cite: 6]", "note": "hail a cab は「（路上で）タクシーを呼び止める、拾う」という定番表現。[cite: 6]"},
+{"en": "Fair enough. And you're always welcome at our table.", "jp": "分かったよ。うちはいつでも大歓迎だからな。[cite: 6]", "note": "Fair enough. は「分かった、それならいいよ（相手の言い分を認める）」。[cite: 6]"},
+{"en": "Thanks. Eating with your family tonight was a real treat.", "jp": "ありがとう。今夜ご家族と一緒に食事できたのは、本当にごちそう（至福のひととき）だったよ。[cite: 6]", "note": "a real treat は「最高のごちそう、素晴らしいもてなし・楽しみ」。[cite: 6]"},
+{"en": "Those kids. Man, they're just so great.", "jp": "あの子供たち。本当に素晴らしい子たちだな。[cite: 6]", "note": ""},
+{"en": "Honestly. Maybe you should get a kid.", "jp": "まったくだ。あんたも子供をもつといい。[cite: 6]", "note": "Honestly は「本当に、まったく」。[cite: 6]"},
+{"en": "I wouldn't recommend five though. Unless you feel like pulling your hair out.", "jp": "5人はお勧めしないがな。髪の毛をむしり取りたくなる（イライラで頭がおかしくなる）気分になりたくなけりゃな。[cite: 6]", "note": "pull one's hair out はイライラやストレスで「髪の毛をかきむしる、発狂しそうになる」という日常比喩表現。[cite: 6]"},
+{"en": "I'll give it some thought.", "jp": "考えさせてもらうよ。[cite: 6]", "note": "give it some thought は「（提案などについて）少し考えてみる、検討してみる」という超頻出フレーズ。[cite: 6]"},
+{"en": "[muffled] 500 Zeus a body. What do you say?", "jp": "（篭もった声）1体につき500ゼウスだ。どうだ？[cite: 6]", "note": "ゲジヒトの脳裏に蘇る謎の記憶・過去のトラウマ。[cite: 6]"},
+{"en": "Hey, talk to me.", "jp": "おい、どうしたんだ？[cite: 6]", "note": "Talk to me. は「何があったか話しなよ、どうしたの？」と声をかける定番の気遣いフレーズ。[cite: 6]"},
+{"en": "Oh. It's nothing. Maybe I had too much to drink.", "jp": "ああ、何でもない。飲みすぎたのかもしれない。[cite: 6]", "note": ""},
+{"en": "Are you sure you can get home by yourself?", "jp": "一人で無事に帰れるか？[cite: 6]", "note": "by yourself は「自分一人で」。[cite: 6]"},
+{"en": "I'm all right. Honest.", "jp": "大丈夫だ。本当だよ。[cite: 6]", "note": ""},
+{"en": "Okay. I'm holding you to that.", "jp": "分かった。その言葉、信じるからな。[cite: 6]", "note": "hold someone to that は「その言葉（約束）を守ってもらう、言った通りにしてもらう」という重要イディオム。[cite: 6]"},
+{"en": "Please do try to be careful in the days ahead.", "jp": "これからの日々、どうか気をつけてくれ。[cite: 6]", "note": "in the days ahead は「これから先の日々で、今後」。[cite: 6]"},
+{"en": "Call me anytime. I don't care if it's a false alarm.", "jp": "いつでも電話してくれ。空振り（誤報）でも構わない。[cite: 6]", "note": "false alarm は「誤報、空振り、誤作動」。[cite: 6]"},
+{"en": "Gesicht.", "jp": "ゲジヒト。[cite: 6]", "note": ""},
+{"en": "Remember how I said winning was mostly up to luck?", "jp": "勝利のほとんどは運次第だって俺が言ったのを覚えているか？[cite: 6]", "note": "be up to... は「〜次第である」。[cite: 6]"},
+{"en": "Humans seem content to leave stuff up to chance all the time,", "jp": "人間どもはいつもあらゆる事を偶然に任せて満足しているようだが、[cite: 6]", "note": "be content to... は「〜することに満足している、〜で甘んじている」。leave stuff up to chance は「物事を運・偶然に委ねる」。[cite: 6]"},
+{"en": "but I say you make your own luck.", "jp": "だが俺に言わせりゃ、運ってのは自分で引き寄せる（創り出す）もんなんだよ。[cite: 6]", "note": "make your own luck は「運は自分で引き寄せる、自らの努力で運を創り出す」という格言的名言。[cite: 6]"},
+{"en": "Long as I've got my family behind me, I'm invincible.", "jp": "家族が俺の後ろについていてくれる限り、俺は無敵さ。[cite: 6]", "note": "As long as... は「〜である限りは」。invincible は「無敵の」。[cite: 6]"},
+{"en": "If you need help, just say the word. I've got your back, guaranteed.", "jp": "助けが必要なら、いつでも一言言ってくれ。俺が背中を守ってやる、保証するよ。[cite: 6]", "note": "say the word は「（望みや要請を）一言口にする」。have someone's back は「人の背中を守る、人を支援する、味方でいる」。[cite: 6]"},
+{"en": "Remember, who's lucky?", "jp": "覚えておけ、幸運な男は誰だ？[cite: 6]", "note": ""},
+{"en": "That you are. And I appreciate the offer.", "jp": "お前だよ。そして、その申し出に感謝するよ。[cite: 6]", "note": "That you are. は「まさに君がそうだ（You are lucky の強調応答）」。appreciate the offer は「申し出に感謝する」。[cite: 6]"},
+{"en": "Please, Brando.", "jp": "頼む、ブランノ。[cite: 6]", "note": ""},
+{"en": "Don't you die on me.", "jp": "俺より先に死ぬんじゃないぞ（死んで悲しませるな）。[cite: 6]", "note": "die on someone は「（大切な人が）自分を置いて死んでしまう、悲しませる形で死ぬ」という切実な感情表現。[cite: 6]"}
+ ];
+
+ // ---- データマイグレーションと初期化 ----
+ const savedEvaluated = localStorage.getItem('pluto_2_3_evaluated');
+ const savedDates = localStorage.getItem('pluto_2_3_dates');
+ const savedSrs = localStorage.getItem('pluto_2_3_srs');
+
+ let evaluatedCards = savedEvaluated ? JSON.parse(savedEvaluated) : new Array(cardsData.length).fill(false);
+ let answerDates = savedDates ? JSON.parse(savedDates) : new Array(cardsData.length).fill(null);
+ 
+let srsData = savedSrs ? JSON.parse(savedSrs) : new Array(cardsData.length).fill(null).map(() => ({
+ interval: 0,
+ ease: 2.5,
+ repetitions: 0,
+ nextReview: null
+ }));
+
+ let currentCardIndex = 0;
+ let correctCount = evaluatedCards.filter(Boolean).length;
+ let isFront = true;
+ let currentMode = 'all'; // 'all', 'unanswered', 'review', 'incorrect'
+
+ const frontSide = document.getElementById('front-side');
+ const backSide = document.getElementById('back-side');
+ const frontEngContent = document.getElementById('front-eng-content');
+ const backEngContent = document.getElementById('back-eng-content');
+ const japContent = document.getElementById('jap-content');
+ const noteContent = document.getElementById('note-content');
+ 
+const controlsFront = document.getElementById('controls-front');
+ const controlsBack = document.getElementById('controls-back');
+ const progressText = document.getElementById('progress-text');
+ const scoreText = document.getElementById('score-text');
+ const playBtn = document.getElementById('play-audio-btn');
+ const dateBadge = document.getElementById('date-badge');
+ const srsBadge = document.getElementById('srs-badge');
+ const modeIndicator = document.getElementById('mode-indicator');
+
+ function saveProgress() {
+ localStorage.setItem('pluto_2_3_evaluated', JSON.stringify(evaluatedCards));
+ localStorage.setItem('pluto_2_3_dates', JSON.stringify(answerDates));
+ localStorage.setItem('pluto_2_3_srs', JSON.stringify(srsData));
+ }
+
+ // YYYY-MM-DD 形式で日付を取得（比較用）
+ function getTodayStringFormatted() {
+ const d = new Date();
+ const y = d.getFullYear();
+ const m = String(d.getMonth() + 1).padStart(2, '0');
+ const day = String(d.getDate()).padStart(2, '0');
+ return `${y}-${m}-${day}`;
+ }
+
+ // 指定日数を足した日付文字列を返す
+ function addDaysToDate(days) {
+ const d = new Date();
+ d.setDate(d.getDate() + days);
+ const y = d.getFullYear();
+ const m = String(d.getMonth() + 1).padStart(2, '0');
+ const day = String(d.getDate()).padStart(2, '0');
+ return `${y}-${m}-${day}`;
+ }
+
+ function getVisibleIndices() {
+ let indices = [];
+ const today = getTodayStringFormatted();
+ 
+for (let i = 0; i < cardsData.length; i++) {
+ if (currentMode === 'all') {
+ indices.push(i);
+ } else if (currentMode === 'unanswered') {
+ if (!answerDates[i]) indices.push(i);
+ } else if (currentMode === 'incorrect') {
+ if (answerDates[i] && !evaluatedCards[i]) indices.push(i);
+ } else if (currentMode === 'review') {
+ // 次回の復習日が設定されていて、かつ今日以前の場合
+ if (srsData[i].nextReview && srsData[i].nextReview <= today) {
+ indices.push(i);
+ }
+ }
+ }
+ return indices;
+ }
+
+ function updateUI() {
+ let indices = getVisibleIndices();
+ 
+if (indices.length === 0) {
+ frontSide.style.display = 'flex';
+ backSide.style.display = 'none';
+ controlsFront.style.display = 'none';
+ controlsBack.style.display = 'none';
+ frontEngContent.innerHTML = "<div class='empty-state'>🎉 このモードの対象カードはありません！<br>上のボタンから別のモードに切り替えてね。</div>";
+ dateBadge.style.display = 'none';
+ srsBadge.style.display = 'none';
+ playBtn.style.display = 'none';
+ progressText.textContent = `- / ${cardsData.length}`;
+ scoreText.textContent = `正解数: ${correctCount}`;
+ return;
+ }
+
+ dateBadge.style.display = 'inline-block';
+ srsBadge.style.display = 'block';
+ playBtn.style.display = 'flex';
+
+ if (!indices.includes(currentCardIndex)) {
+ currentCardIndex = indices[0];
+ }
+
+ let pos = indices.indexOf(currentCardIndex);
+ progressText.textContent = `${pos + 1} / ${indices.length} (全${cardsData.length}問)`;
+ scoreText.textContent = `正解数: ${correctCount}`;
+
+ let dateStr = answerDates[currentCardIndex];
+ dateBadge.textContent = dateStr ? `最終回答日：${dateStr}` : `最終回答日：未回答`;
+
+ let srs = srsData[currentCardIndex];
+ if (srs.nextReview) {
+ srsBadge.textContent = `次回予定日: ${srs.nextReview} (連続正解: ${srs.repetitions}回)`;
+ } else {
+ srsBadge.textContent = `まだSRSに登録されていません`;
+ }
+
+ if (isFront) {
+ frontSide.style.display = 'flex';
+ backSide.style.display = 'none';
+ controlsFront.style.display = 'flex';
+ controlsBack.style.display = 'none';
+ } else {
+ frontSide.style.display = 'none';
+ backSide.style.display = 'flex';
+ controlsFront.style.display = 'none';
+ controlsBack.style.display = 'flex';
+ }
+
+ frontEngContent.textContent = cardsData[currentCardIndex].en;
+ backEngContent.textContent = cardsData[currentCardIndex].en;
+ japContent.textContent = cardsData[currentCardIndex].jp;
+ 
+if (cardsData[currentCardIndex].note) {
+ noteContent.style.display = 'block';
+ noteContent.textContent = "💡 " + cardsData[currentCardIndex].note;
+ } else {
+ noteContent.style.display = 'none';
+ }
+ }
+
+ function flipCard() {
+ isFront = !isFront;
+ updateUI();
+ }
+
+ function returnToFront() {
+ isFront = true;
+ updateUI();
+ }
+
+ function advanceCard(forward) {
+ let indices = getVisibleIndices();
+ if (indices.length === 0) {
+ updateUI();
+ return;
+ }
+
+ let pos = indices.indexOf(currentCardIndex);
+ 
+if (pos !== -1) {
+ if (forward) {
+ currentCardIndex = indices[(pos + 1) % indices.length];
+ } else {
+ // 前へボタンのループ処理
+ currentCardIndex = indices[(pos - 1 + indices.length) % indices.length];
+ }
+ } else {
+ let nextIdx = indices.find(i => i > currentCardIndex);
+ currentCardIndex = nextIdx !== undefined ? nextIdx : indices[0];
+ }
+ 
+isFront = true;
+ updateUI();
+ }
+
+ function nextCard() { advanceCard(true); }
+ function prevCard() { advanceCard(false); }
+
+ function markCorrect() {
+ // 従来のカウント用処理
+ let wasCorrect = evaluatedCards[currentCardIndex];
+ if (!wasCorrect) {
+ correctCount++;
+ evaluatedCards[currentCardIndex] = true;
+ }
+ answerDates[currentCardIndex] = getTodayStringFormatted();
+
+ // SRS (SM-2) アルゴリズムによる「完璧！」の処理
+ let cardSrs = srsData[currentCardIndex];
+ cardSrs.repetitions += 1;
+ 
+if (cardSrs.repetitions === 1) {
+ cardSrs.interval = 1; // 初回は1日後
+ } else if (cardSrs.repetitions === 2) {
+ cardSrs.interval = 6; // 2回目は6日後
+ } else {
+ cardSrs.interval = Math.round(cardSrs.interval * cardSrs.ease);
+ }
+ cardSrs.nextReview = addDaysToDate(cardSrs.interval);
+
+ saveProgress();
+ nextCard();
+ }
+
+ function markIncorrect() {
+ // 従来のカウント用処理
+ let wasCorrect = evaluatedCards[currentCardIndex];
+ if (wasCorrect) {
+ correctCount--;
+ evaluatedCards[currentCardIndex] = false;
+ }
+ answerDates[currentCardIndex] = getTodayStringFormatted();
+
+ // SRS (SM-2) アルゴリズムによる「覚えてない」の処理
+ let cardSrs = srsData[currentCardIndex];
+ cardSrs.repetitions = 0; // 連続正解リセット
+ cardSrs.interval = 1; // 翌日に再出題
+ cardSrs.ease = Math.max(1.3, cardSrs.ease - 0.2); // 定着度（難易度係数）を下げる
+ cardSrs.nextReview = addDaysToDate(cardSrs.interval);
+
+ saveProgress();
+ nextCard();
+ }
+
+ function setMode(mode) {
+ currentMode = mode;
+ 
+const modeNames = {
+ 'all': '📁 全問',
+ 'unanswered': '🆕 未回答',
+ 'review': '📅 今日の復習',
+ 'incorrect': '🎯 未正解'
+ };
+ modeIndicator.textContent = `現在のモード：${modeNames[mode]}`;
+
+ let indices = getVisibleIndices();
+ if (indices.length > 0) {
+ currentCardIndex = indices[0];
+ }
+ isFront = true;
+ updateUI();
+ }
+
+ function jumpToUnanswered() {
+ let indices = getVisibleIndices();
+ if (indices.length === 0) return;
+
+ let targetIndex = indices.find(index => !answerDates[index]);
+
+ if (targetIndex !== undefined) {
+ currentCardIndex = targetIndex;
+ } else {
+ currentCardIndex = indices[0];
+ }
+ 
+isFront = true;
+ updateUI();
+ }
+
+ function speakText() {
+ const textToSpeak = cardsData[currentCardIndex].en;
+ window.speechSynthesis.cancel();
+ const utterance = new SpeechSynthesisUtterance(textToSpeak);
+ utterance.lang = 'en-US';
+ utterance.rate = 0.9;
+ window.speechSynthesis.speak(utterance);
+ }
+
+ playBtn.addEventListener('click', speakText);
+
+ updateUI();
+ </script>
+</body>
+</html>
